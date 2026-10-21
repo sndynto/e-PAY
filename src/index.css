@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS custom properties ─────────────────────────────── */
+:root {
+  --bg: #090B0A;
+  --surface: #111512;
+  --elevated: #171B18;
+  --border: #272D28;
+  --accent: #C7FF4A;
+  --accent-dim: #A8D93E;
+  --primary: #F4F6F2;
+  --secondary: #929B92;
+  --success: #65DB91;
+  --warning: #FFC66D;
+  --danger: #FF7777;
+
+  /* Easing presets */
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--primary);
+  /* Geist first; Inter as a reliable fallback */
+  font-family: 'Geist', 'Inter', system-ui, sans-serif;
+  font-size: 0.9375rem;   /* 15px base — tighter than 16px on dense fintech UI */
+  line-height: 1.5;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+  /* Prevent layout shift from scrollbar appearing/disappearing */
+  scrollbar-gutter: stable;
+}
+
+/* ─── Typographic utilities ──────────────────────────────── */
+
+/* Monetary amounts — always tabular, always Geist */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Tight heading weight — Geist 600 at negative tracking */
+.heading {
+  font-family: 'Geist', 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Monospaced identifiers — wallet addresses, tx hashes */
+.mono {
+  font-family: 'Geist Mono', 'DM Mono', Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;   /* slightly smaller than body — mono reads larger */
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4238; }
+
+/* ─── Focus ring ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 1.5px solid #C7FF4A;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Page-enter animation ───────────────────────────────── */
+/* Applied by AppLayout to .page-enter children */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: page-enter 0.22s var(--ease-out) both;
+}
+
+/* ─── Skeleton shimmer ───────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface)   0%,
+    var(--elevated)  40%,
+    var(--surface)   80%
+  );
+  background-size: 400px 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+/* ─── Spinner ────────────────────────────────────────────── */
+/* Single standard spinner class — border approach, no pseudo-elements */
+.spinner {
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Status dot ─────────────────────────────────────────── */
+@keyframes pulseDot {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.8); }
+}
+
+.pulse-dot { animation: pulseDot 2.4s ease-in-out infinite; }
+
+/* ─── Inline fade-up for small reveals ──────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up { animation: fadeUp 0.22s var(--ease-out) both; }
+
+/* ─── Content collapse/expand ────────────────────────────── */
+/* Used for fee breakdown, review rows — CSS-only height transition */
+.collapsible-enter {
+  overflow: hidden;
+  animation: fadeUp 0.18s var(--ease-out) both;
+}
+
+/* ─── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Skeleton stays visible but static */
+  .skeleton {
+    background: var(--surface);
+    animation: none;
+  }
+}
+
+/* ─── Sonner toast overrides ─────────────────────────────── */
+[data-sonner-toaster] {
+  --normal-bg: var(--elevated) !important;
+  --normal-border: var(--border) !important;
+  --normal-text: var(--primary) !important;
+  --success-bg: var(--elevated) !important;
+  --success-border: rgba(101, 219, 145, 0.2) !important;
+  --success-text: var(--primary) !important;
+  --error-bg: var(--elevated) !important;
+  --error-border: rgba(255, 119, 119, 0.2) !important;
+  --error-text: var(--primary) !important;
+  font-family: 'Geist', 'Inter', system-ui, sans-serif !important;
+  font-size: 0.8125rem !important;
+}
+
+[data-sonner-toast] {
+  border-radius: 0.5rem !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+}
